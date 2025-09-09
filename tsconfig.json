@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": false,
+    "forceConsistentCasingInFileNames": true,
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "app",
+    "outDir": "lib",
+    "resolveJsonModule": true,
+    "typeRoots": ["app/types"]
+  },
+  "include": ["app"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,6 @@
+{
+  "ignore": ["**/*.test.js", "**/*.test.ts", ".git", "node_modules"],
+  "ext": "js,ts",
+  "exec": "ts-node ./app/index.ts",
+  "env": {}
+}

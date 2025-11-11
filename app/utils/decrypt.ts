@@ -23,7 +23,7 @@ export function decryptTokenPair(encryptedBase64: string): string {
     const buffer = Buffer.from(encryptedBase64, 'base64')
     const decrypted = crypto.privateDecrypt(
       {
-        key: key,
+        key,
         padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
         oaepHash: 'sha256',
       },
@@ -42,7 +42,7 @@ export function decryptCppModules(encryptedBase64: string): License {
     const buffer = Buffer.from(encryptedBase64, 'base64')
     const decrypted = crypto.privateDecrypt(
       {
-        key: key,
+        key,
         padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
         oaepHash: 'sha256',
       },

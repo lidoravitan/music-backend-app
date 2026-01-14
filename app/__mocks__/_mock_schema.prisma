@@ -1,8 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
-  moduleFormat = "commonjs"
-  importFileExtension = ""
+  provider     = "prisma-client"
+  output       = "../app/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -27,7 +26,7 @@ model User {
   salt      String
   name      String?
   isActive  Boolean  @default(true)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   License   License?
 }

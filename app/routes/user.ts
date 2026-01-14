@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { sign } from 'jsonwebtoken'
-import { db } from '../client'
+import { prisma } from '../client'
 import { appConfig } from '../conf'
 import { authenticateToken } from '../middleware/auth.middleware'
 import { comparePassword, hashPassword } from '../utils/hash'
@@ -8,7 +8,7 @@ import { comparePassword, hashPassword } from '../utils/hash'
 export const usersRouter = Router()
 
 usersRouter.post('/signin', async (req, res) => {
-  const user = await db.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       username: req.body.username,
     },
@@ -34,7 +34,7 @@ usersRouter.post('/signin', async (req, res) => {
 usersRouter.get('/auth', authenticateToken, async (req, res) => {
   const { id } = req.context
 
-  const user = await db.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       id,
     },
@@ -54,7 +54,7 @@ usersRouter.get('/auth', authenticateToken, async (req, res) => {
 usersRouter.post('/register', async (req, res) => {
   const { hash, salt } = hashPassword(req.body.password)
 
-  await db.user.create({
+  await prisma.user.create({
     data: {
       username: req.body.username,
       password: hash,

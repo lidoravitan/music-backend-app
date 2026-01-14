@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "strict": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
-    "removeComments": false,
-    "forceConsistentCasingInFileNames": true,
+    "target": "ES2022",
     "module": "NodeNext",
-    "target": "ESNext",
     "moduleResolution": "NodeNext",
-    "rootDir": "app",
-    "outDir": "lib",
-    "resolveJsonModule": true,
-    "typeRoots": ["app/types"]
+    "rootDir": "./app",
+    "outDir": "./lib",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["app"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib", "generated", "prisma"]
 }

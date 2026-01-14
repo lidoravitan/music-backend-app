@@ -1,22 +1,40 @@
 import { Router } from 'express'
 import { authenticator, totp } from 'otplib'
-import { db } from '../client'
+import { prisma } from '../client'
 import { authenticateToken } from '../middleware/auth.middleware'
+import { decryptCppModules, hashString } from '../utils/decrypt'
 
 const otpRouter = Router()
 
 otpRouter.post('/generate', authenticateToken, async (req, res) => {
-  const { userId } = req.body
-  const licenseKey = await db.license.findFirst({
+  const { data } = req.body
+  const { id } = req.context
+
+  const decreptedModule = decryptCppModules(data)
+
+  const hashed = await hashString(JSON.stringify(decreptedModule))
+
+  const seat = await prisma.license.findFirst({
     where: {
-      userId: userId,
+      userId: id,
     },
   })
-  if (!licenseKey) return res.status(404).json({ error: 'License key not found' })
 
-  const otp = totp.generate(authenticator.encode(licenseKey.value))
+  if (!seat) throw new Error('No license found for user 320.')
 
-  res.json({ otp })
+  const seatHashes = JSON.parse(seat.value)
+
+  if (!seatHashes.includes(hashed)) {
+    throw new Error('No license found for user 420.')
+  }
+
+  totp.options = {
+    step: 120,
+  }
+
+  const otp = totp.generate(authenticator.encode(JSON.stringify(seat.value)))
+
+  res.json({ otp, expiresIn: totp.timeRemaining() })
 })
 
 export default otpRouter

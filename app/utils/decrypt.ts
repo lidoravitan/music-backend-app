@@ -50,6 +50,10 @@ export function decryptCppModules(encryptedBase64: string): License {
     )
     return JSON.parse(decrypted.toString('utf-8'))
   } catch (err: any) {
-    throw new Error(`Decryption failed: ${err.message}`)
+    throw 'Invalid decryption'
   }
+}
+
+export async function hashString(encryptedBase64: string) {
+  return crypto.createHash('sha256').update(encryptedBase64).digest('base64')
 }

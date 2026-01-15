@@ -46,6 +46,7 @@ usersRouter.get('/auth', authenticateToken, async (req, res) => {
     message: 'User authenticated',
     user: {
       ...user,
+      salt: null,
       password: null,
     },
   })

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only app/index.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node lib/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "prisma:studio": "npx prisma studio",

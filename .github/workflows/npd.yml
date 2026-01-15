@@ -1,0 +1,65 @@
+name: CI/CD expense-manager
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  bump: 
+    name: 'Bump Version on master!'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'checkout'
+        uses: actions/checkout@v2
+
+      - name:  'auto bump version'
+        uses:  'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          skip-tag:  'true'
+          minor-wording:  'change'
+          major-wording:  'add,feat'
+          patch-wording:  'patch,fixes,fix,chore,patch'
+          rc-wording:     'RELEASE,alpha'
+
+  build:
+    needs: bump
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: docker login
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: |
+          echo $DOCKER_PASSWORD  | docker login -u $DOCKER_USER --password-stdin
+      - name: build the docker image
+        run: |
+          PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+          docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/tziyon-api:$PACKAGE_VERSION --tag ${{secrets.DOCKER_USER}}/tziyon-api:latest
+
+      - name: docker Push
+        run: docker push ${{secrets.DOCKER_USER}}/tziyon-api --all-tags
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+
+  #   - name: Setup SSH
+  #     uses: appleboy/ssh-action@master
+  #     with:
+  #       host: ${{ secrets.SSH_HOST_NPD }}
+  #       username: ${{ secrets.SSH_USERNAME_NPD }}
+  #       password: ${{ secrets.SSH_PASSWORD_NPD }}
+  #       script: |
+  #         cd ~/env
+  #         sh npd-update.sh

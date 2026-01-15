@@ -3,7 +3,7 @@ import { License } from '../types'
 
 export function decryptTokenPair(encryptedBase64: string): string {
   const key = process.env.PRIVATE_KEY_PEM || ''
-  console.log('Using private key:', key)
+
   try {
     const buffer = Buffer.from(encryptedBase64, 'base64')
     const decrypted = crypto.privateDecrypt(

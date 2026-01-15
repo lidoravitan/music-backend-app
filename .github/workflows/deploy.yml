@@ -47,10 +47,10 @@ jobs:
       - name: build the docker image
         run: |
           PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-          docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/tziyon-api:$PACKAGE_VERSION --tag ${{secrets.DOCKER_USER}}/tziyon-api:latest
+          docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/music-backend-app:$PACKAGE_VERSION --tag ${{secrets.DOCKER_USER}}/music-backend-app:latest
 
       - name: docker Push
-        run: docker push ${{secrets.DOCKER_USER}}/tziyon-api --all-tags
+        run: docker push ${{secrets.DOCKER_USER}}/music-backend-app --all-tags
 
   deploy:
     runs-on: ubuntu-latest
@@ -63,9 +63,9 @@ jobs:
     - name: Setup SSH
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST_NPD }}
-        username: ${{ secrets.SSH_USERNAME_NPD }}
-        password: ${{ secrets.SSH_PASSWORD_NPD }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAM }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
           cd ~/env-aa
           sh npd-update.sh

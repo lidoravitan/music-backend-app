@@ -67,5 +67,5 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          cd ~/env-aa
-          sh npd-update.sh
+          cd ~/music-server-env
+          sh update.sh

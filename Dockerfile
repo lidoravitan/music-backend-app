@@ -20,7 +20,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
 COPY prisma.config.js ./prisma.config.js
-COPY start.sh ./
+
 RUN npm ci
 
 # Copy source code
@@ -45,9 +45,13 @@ COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.js ./prisma.config.js
-COPY --from=builder /app/start.sh ./
-# Copy PM2 ecosystem file
+
+# Copy PM2 ecosystem file and entrypoint script
 COPY ecosystem.config.js ./
+COPY docker-entrypoint.sh ./
+
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs
@@ -59,5 +63,5 @@ USER expressjs
 # Expose the port
 EXPOSE 3030
 
-# Start application with PM2
-CMD ["sh", "start.sh"]
+# Start application with entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -3,61 +3,76 @@ FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+# Install OpenSSL for Prisma and libc6-compat for better compatibility
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
+
+# Copy package files for better layer caching
+COPY package.json package-lock.json* ./
+
+# Install production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Build stage - install all dependencies and build
+FROM base AS builder
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
-COPY prisma ./prisma
+COPY package.json package-lock.json* ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Install development dependencies for build
-FROM base AS builder
-WORKDIR /app
-COPY package*.json ./
-COPY prisma ./prisma
-COPY prisma.config.js ./prisma.config.js
-
+# Install all dependencies (including dev dependencies)
 RUN npm ci
 
+# Copy Prisma schema and config files
+COPY prisma ./prisma
+COPY prisma.config.js* prisma.config.ts* ./
+
+# Generate Prisma client
+RUN npx prisma generate
+
 # Copy source code
-COPY . .
 COPY tsconfig.json ./
+COPY app ./app
 
 # Build TypeScript code
 RUN npm run build
 
 # Production image
 FROM base AS runner
+RUN apk add --no-cache openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install PM2 globally
-RUN npm install -g pm2
+# Install PM2 globally with specific version for reproducibility
+RUN npm install -g pm2@latest
 
-# Copy necessary files from builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=builder /app/lib ./lib
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.js ./prisma.config.js
+# Create a non-root user early
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 expressjs
 
-# Copy PM2 ecosystem file and entrypoint script
-COPY ecosystem.config.js ./
-COPY ./scripts/docker-entrypoint.sh ./
+# Copy production dependencies
+COPY --from=deps --chown=expressjs:nodejs /app/node_modules ./node_modules
+
+# Copy built application
+COPY --from=builder --chown=expressjs:nodejs /app/lib ./lib
+
+# Copy Prisma files (including generated client)
+COPY --from=builder --chown=expressjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=expressjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=expressjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Copy configuration files
+COPY --chown=expressjs:nodejs package.json ./
+COPY --chown=expressjs:nodejs prisma.config.js* prisma.config.ts* ./
+COPY --chown=expressjs:nodejs ecosystem.config.js ./
+COPY --chown=expressjs:nodejs ./scripts/docker-entrypoint.sh ./
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 expressjs
-RUN chown -R expressjs:nodejs /app
-
+# Switch to non-root user
 USER expressjs
 
 # Expose the port

@@ -12,8 +12,8 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3030,
       },
-      error_file: '/dev/null',
-      out_file: '/dev/null',
+      error_file: '/dev/stderr',
+      out_file: '/dev/stdout',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       merge_logs: true,
       // Restart configuration

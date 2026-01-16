@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { authenticator, totp } from 'otplib'
 import { prisma } from '../client'
 import { authenticateToken } from '../middleware/auth.middleware'
-import { decryptCppModules, hashString } from '../utils/decrypt'
+import { decryptCppModules, hashCppModule } from '../utils/crypto.utils'
 
 const otpRouter = Router()
 
@@ -12,7 +12,7 @@ otpRouter.post('/generate', authenticateToken, async (req, res) => {
 
   const decreptedModule = decryptCppModules(data)
 
-  const hashed = await hashString(JSON.stringify(decreptedModule))
+  const hashed = await hashCppModule(JSON.stringify(decreptedModule))
 
   const seat = await prisma.license.findFirst({
     where: {

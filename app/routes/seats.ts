@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { prisma } from '../client'
 import { authenticateToken } from '../middleware/auth.middleware'
-import { decryptCppModules, hashString } from '../utils/decrypt'
+import { decryptCppModules, hashCppModule } from '../utils/crypto.utils'
 
 export const seatsRouter = Router()
 
@@ -16,7 +16,7 @@ seatsRouter.post('/register', authenticateToken, async (req, res) => {
 
   const hashed = await Promise.all(
     decreptedModules.map((mod: string) => {
-      return hashString(JSON.stringify(mod))
+      return hashCppModule(JSON.stringify(mod))
     }),
   )
 

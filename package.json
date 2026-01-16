@@ -5,13 +5,12 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only app/index.ts",
     "build": "tsc",
-    "start": "node lib/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "prisma:studio": "npx prisma studio",
     "prisma:migrate": "npx prisma migrate dev --name",
     "prisma:generate": "npx prisma generate",
-    "docker": "docker-compose -f ./docker-compose.dev.yml up -d"
+    "docker:dev": "docker-compose -f ./docker-compose.dev.yml up -d"
   },
   "author": "",
   "license": "ISC",

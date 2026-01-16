@@ -48,7 +48,7 @@ COPY --from=builder /app/prisma.config.js ./prisma.config.js
 
 # Copy PM2 ecosystem file and entrypoint script
 COPY ecosystem.config.js ./
-COPY docker-entrypoint.sh ./
+COPY ./scripts/docker-entrypoint.sh ./
 
 # Make entrypoint executable
 RUN chmod +x docker-entrypoint.sh

@@ -3,11 +3,12 @@ import { sign } from 'jsonwebtoken'
 import { prisma } from '../client'
 import { appConfig } from '../conf'
 import { authenticateToken } from '../middleware/auth.middleware'
-import { comparePassword, hashPassword } from '../utils/hash'
+import { comparePassword, hashPassword } from '../utils/crypto.utils'
 
 export const usersRouter = Router()
 
 usersRouter.post('/signin', async (req, res) => {
+  
   const user = await prisma.user.findUnique({
     where: {
       username: req.body.username,

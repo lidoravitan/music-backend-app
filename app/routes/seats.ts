@@ -35,7 +35,7 @@ seatsRouter.post('/register', authenticateToken, async (req, res) => {
       userId: id,
       value: JSON.stringify(hashed),
       name: 'default',
-      expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+      expiredAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
     },
   })
 

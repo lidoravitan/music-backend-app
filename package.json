@@ -3,12 +3,14 @@
   "version": "3.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "npm run dev",
     "dev": "ts-node-dev --respawn --transpile-only app/index.ts",
     "build": "tsc",
     "lint": "eslint .",
     "format": "prettier --write .",
     "prisma:studio": "npx prisma studio",
     "prisma:migrate": "npx prisma migrate dev --name",
+    "prisma:deploy": "npx prisma migrate deploy",
     "prisma:generate": "npx prisma generate",
     "docker:dev": "docker-compose -f ./docker-compose.dev.yml up -d"
   },
